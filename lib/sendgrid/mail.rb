@@ -20,10 +20,20 @@ module SendGrid
       @smtpapi.add_to to_email
     end
 
-    def add_attachment(path, name = nil)
-      file   = File.new(path)
-      name ||= File.basename(file)
+    def add_attachment_file(file, name = nil)
+      @attachments << {file: file, name: name || file.try(:original_filename) || File.basename(file.path)}
+    end
+
+    def add_attachment_path(path, name = nil)
+      file    = File.new(path)
+      name  ||= File.basename(file)
+
       @attachments << {file: file, name: name}
+    end
+
+    # for backward compatibility, should eventually be deprecated
+    def add_attachment(path, name = nil)
+      add_attachment_path(path, name)
     end
 
     def add_header(key, value)
